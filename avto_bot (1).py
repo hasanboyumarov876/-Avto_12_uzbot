@@ -7,7 +7,7 @@ from telethon.tl.types import MessageService
 # SOZLAMALAR — FAQAT SHUНИ O'ZGARTIRING
 # ============================================
 
-BOT_TOKEN = "SIZNING_TOKEN"  # @BotFather dan olgan token
+BOT_TOKEN = 8659725946:AAE7Narh-xlLWlT9Zd7EiIpvSFjuoVtDV1g  # @BotFather dan olgan token
 API_ID = 12345               # my.telegram.org dan olasiz
 API_HASH = "SIZNING_API_HASH"  # my.telegram.org dan olasiz
 SIZNING_ID = 123456789       # @userinfobot dan olgan ID
