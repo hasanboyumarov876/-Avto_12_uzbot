@@ -59,7 +59,7 @@ async def tahrirlangan(event):
 
 async def main():
     print("✅ Bot ishga tushdi!")
-    await client.start(bot_token=BOT_TOKEN)
+    await client.start()
     await client.run_until_disconnected()
 
 
