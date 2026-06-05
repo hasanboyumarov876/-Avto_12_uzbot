@@ -10,7 +10,7 @@ from telethon.tl.types import MessageService
 BOT_TOKEN = "8659725946:AAE7Narh-xlLWlT9Zd7EiIpvSFjuoVtDV1g"  # @BotFather dan olgan token
 API_ID = 37100683               # my.telegram.org dan olasiz
 API_HASH = "13513597f58100d3232e3838d196bc60"  # my.telegram.org dan olasiz
-SIZNING_ID = 123456789       # @userinfobot dan olgan ID
+SIZNING_ID = 8654245295       # @userinfobot dan olgan ID
 
 # Kuzatiladigan kanallar
 KANALLAR = [
