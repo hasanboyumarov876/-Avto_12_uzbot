@@ -60,7 +60,7 @@ async def tahrirlangan(event):
 
 async def main():
     print("✅ Bot ishga tushdi! Kanallar kuzatilmoqda...")
-    await client.start(bot_token=BOT_TOKEN)
+    await client.start()
     await client.run_until_disconnected()
 
 if __name__ == "__main__":
