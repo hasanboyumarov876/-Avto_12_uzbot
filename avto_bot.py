@@ -18,6 +18,7 @@ KANALLAR = [
     "Sherzodabzor", 
     "nurik_avto_qarshi",
     "vodiy_avto_rasmiy"
+    "https://t.me/Accountant_in_Logistics"
 ]
 
 # Kalit so'zlar
