@@ -73,6 +73,6 @@ async def main():
     await client.run_until_disconnected()
 
 
-if name == "main":
+if__name__=="__main__":
     threading.Thread(target=web_server, daemon=True).start()
     asyncio.run(main())
