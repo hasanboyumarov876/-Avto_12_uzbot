@@ -63,7 +63,7 @@ async def main():
     await client.run_until_disconnected()
 
 
-if __name__ == "__main__":
+if__name__ == "__main__":
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 
