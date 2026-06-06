@@ -63,7 +63,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def web_server():
-    server = HTTPServer(('0.0.0.0', 8080), Handler)
+    server = HTTPServer(('0.0.0.0', 3000), Handler)
     server.serve_forever()
 
 
