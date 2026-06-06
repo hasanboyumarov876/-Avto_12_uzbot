@@ -1,17 +1,17 @@
 import asyncio
 import logging
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from telethon import TelegramClient, events
 
 # ============================================
 # SOZLAMALAR
 # ============================================
 
-BOT_TOKEN = "8659725946:AAE7Narh-xlLWlT9Zd7EiIpvSFjuoVtDV1g"
 API_ID = 37100683
 API_HASH = "13513597f58100d3232e3838d196bc60"
 SIZNING_ID = 8654245295
 
-# Kuzatiladigan kanallar (FAQAT username)
 KANALLAR = [
     "qoshkopiravto_markett",
     "Sherzodabzor",
@@ -20,8 +20,7 @@ KANALLAR = [
     "Accountant_in_Logistics"
 ]
 
-# Kalit so'zlar
-SOTILDI_SOZLAR = ["sotildi", "сотилди", "продано", "sold", "sotilgan", "baraka bo‘ldi"]
+SOTILDI_SOZLAR = ["sotildi", "сотилди", "продано", "sold", "sotilgan", "baraka bo'ldi"]
 
 # ============================================
 
@@ -33,7 +32,6 @@ client = TelegramClient('avto_monitor', API_ID, API_HASH)
 @client.on(events.NewMessage(chats=KANALLAR))
 async def yangi_elon(event):
     matn = event.message.text or ""
-
     for soz in SOTILDI_SOZLAR:
         if soz.lower() in matn.lower():
             kanal = getattr(event.chat, "username", "noma'lum")
@@ -46,26 +44,14 @@ async def yangi_elon(event):
 async def tahrirlangan(event):
     matn = event.message.text or ""
     kanal = getattr(event.chat, "username", "noma'lum")
-
     for soz in SOTILDI_SOZLAR:
         if soz.lower() in matn.lower():
             xabar = f"✏️ SOTILDI (EDIT)\n\n📢 Kanal: @{kanal}\n\n{matn[:300]}"
             await client.send_message(SIZNING_ID, xabar)
             return
-
     xabar = f"✏️ POST EDITLANDI\n\n📢 Kanal: @{kanal}\n\n{matn[:300]}"
     await client.send_message(SIZNING_ID, xabar)
 
-
-async def main():
-    print("✅ Bot ishga tushdi!")
-    await client.start()
-    await client.run_until_disconnected()
-
-
-if__name__ == "__main__":
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import threading
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -75,9 +61,18 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
 
+
 def web_server():
     server = HTTPServer(('0.0.0.0', 8080), Handler)
     server.serve_forever()
 
-threading.Thread(target=web_server, daemon=True).start() 
+
+async def main():
+    print("✅ Bot ishga tushdi!")
+    await client.start()
+    await client.run_until_disconnected()
+
+
+if name == "main":
+    threading.Thread(target=web_server, daemon=True).start()
     asyncio.run(main())
