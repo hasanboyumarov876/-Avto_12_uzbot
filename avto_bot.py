@@ -1,63 +1,88 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from telethon import TelegramClient, events
 
-# SOZLAMALAR
-BOT_TOKEN = "8659725946:AAE7Narh-xlLWlT9Zd7EiIpvSFjuoVtDV1g"
+# ============================================
+# SOZLAMALAR — O'ZGARTIRING
+# ============================================
+API_ID = 37100683
+API_HASH = "13513597f58100d3232e3838d196bc60"
 SIZNING_ID = 8654245295
 
-# Kuzatiladigan kanallar (username, @ siz)
 KANALLAR = [
     "qoshkopiravto_markett",
     "Sherzodabzor",
     "nurik_avto_qarshi",
     "vodiy_avto_rasmiy",
-    "Logistika_sohasidagi_buxgalter",
+    "Accountant_in_Logistics"
 ]
 
-# Kalit so'zlar
-SOTILDI_SOZLAR = ["sotildi", "сотилди", "продано", "sold", "sotilgan", "baraka bo'ldi"]
+SOTILDI_SOZLAR = [
+    "sotildi", "сотилди", "продано",
+    "sold", "sotilgan", "baraka bo'ldi"
+]
+# ============================================
 
 logging.basicConfig(level=logging.INFO)
-
-bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
-dp = Dispatcher()
+client = TelegramClient('avto_monitor', API_ID, API_HASH)
 
 
-def sotildi_bormi(matn: str) -> bool:
-    if not matn:
-        return False
-    matn_lower = matn.lower()
-    return any(soz.lower() in matn_lower for soz in SOTILDI_SOZLAR)
+@client.on(events.NewMessage(chats=KANALLAR))
+async def yangi_elon(event):
+    matn = event.message.text or ""
+    for soz in SOTILDI_SOZLAR:
+        if soz.lower() in matn.lower():
+            kanal = getattr(event.chat, "username", "noma'lum")
+            await client.send_message(
+                SIZNING_ID,
+                f"✅ SOTILDI!\n\n📢 @{kanal}\n\n{matn[:300]}"
+            )
+            return
 
 
-@dp.channel_post()
-async def yangi_elon(message):
-    kanal = message.chat.username or "noma'lum"
-    if kanal not in KANALLAR:
-        return
-    matn = message.text or message.caption or ""
-    if sotildi_bormi(matn):
-        xabar = f"✅ SOTILDI!\n\nKanal: @{kanal}\n\n{matn[:300]}"
-        await bot.send_message(SIZNING_ID, xabar)
+@client.on(events.MessageEdited(chats=KANALLAR))
+async def tahrirlangan(event):
+    matn = event.message.text or ""
+    kanal = getattr(event.chat, "username", "noma'lum")
+    for soz in SOTILDI_SOZLAR:
+        if soz.lower() in matn.lower():
+            await client.send_message(
+                SIZNING_ID,
+                f"✏️ SOTILDI (EDIT)\n\n📢 @{kanal}\n\n{matn[:300]}"
+            )
+            return
+    await client.send_message(
+        SIZNING_ID,
+        f"✏️ EDITLANDI\n\n📢 @{kanal}\n\n{matn[:300]}"
+    )
 
 
-@dp.edited_channel_post()
-async def tahrirlangan_elon(message):
-    kanal = message.chat.username or "noma'lum"
-    if kanal not in KANALLAR:
-        return
-    matn = message.text or message.caption or ""
-    if sotildi_bormi(matn):
-        xabar = f"✏️ SOTILDI (EDIT)\n\nKanal: @{kanal}\n\n{matn[:300]}"
-        await bot.send_message(SIZNING_ID, xabar)
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b'Bot ishlayapti!')
+
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
+
+    def log_message(self, *a):
+        pass
+
+
+def web_server():
+    HTTPServer(('0.0.0.0', 8080), Handler).serve_forever()
 
 
 async def main():
     print("✅ Bot ishga tushdi!")
-    await dp.start_polling(bot)
+    await client.start()
+    await client.run_until_disconnected()
 
 
 if __name__ == "__main__":
+    threading.Thread(target=web_server, daemon=True).start()
     asyncio.run(main())
